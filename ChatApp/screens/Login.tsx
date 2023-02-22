@@ -6,6 +6,7 @@ import {
   TextInput,
   Pressable,
   Alert,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -67,6 +68,12 @@ const Login = ({navigation}: any) => {
           </View>
         </Pressable>
       </View>
+      <Image
+        source={{
+          uri: 'file:///Users/isang-yun/Library/Developer/CoreSimulator/Devices/0556A566-C2B1-4285-83EC-76AAC43D8597/data/Containers/Data/Application/73C3A651-1F1D-46DE-A963-895E14A9D8D8/tmp/D567E429-43F8-423F-8F07-43A0F6B1698F.jpg',
+        }}
+        style={{width: 50, height: 50, backgroundColor: 'red'}}
+      />
     </SafeAreaView>
   );
 };

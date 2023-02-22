@@ -4,13 +4,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import MessageComponent from '../components/MessageComponent';
 import {styles} from '../utils/styles';
 import socket from '../utils/soket';
+import Camera from '../assets/icons/camera.svg';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {ImagePickerResponse} from 'react-native-image-picker';
 
 const Messaging = ({route, navigation}: any) => {
   const [user, setUser] = useState('');
   const {name, id} = route.params;
-
+  const [roomMember, setRoomMember] = useState(0);
+  // console.log(name, id);
+  console.log(`방 인원: ${roomMember}`);
   const [chatMessages, setChatMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const [file, setFile] = useState<string | undefined>('');
+  console.log(file);
 
   const getUsername = async () => {
     try {
@@ -36,6 +43,7 @@ const Messaging = ({route, navigation}: any) => {
 
     if (user) {
       socket.emit('newMessage', {
+        file,
         message,
         room_id: id,
         user,
@@ -55,7 +63,34 @@ const Messaging = ({route, navigation}: any) => {
 
   useEffect(() => {
     socket.on('foundRoom', roomChats => setChatMessages(roomChats));
-  }, [socket]);
+    socket.emit('members', name);
+    socket.on('roomMemberCount', count => {
+      setRoomMember(count);
+    });
+  }, [name]);
+
+  // camera
+  const onCameraOpen = () => {
+    console.log('camera');
+    const onPickImage = (res: ImagePickerResponse) => {
+      if (res.didCancel || !res) {
+        return;
+      }
+    };
+    launchImageLibrary(
+      {
+        mediaType: 'mixed',
+        maxWidth: 768,
+        maxHeight: 768,
+      },
+      onPickImage,
+    ).then(res => {
+      console.log(`사진앨범: ${res.assets && res.assets[0].uri}`);
+      if (res.assets !== undefined) {
+        setFile(res.assets[0].uri);
+      }
+    });
+  };
 
   return (
     <View style={styles.messagingscreen}>
@@ -78,6 +113,9 @@ const Messaging = ({route, navigation}: any) => {
       </View>
 
       <View style={styles.messaginginputContainer}>
+        <Pressable onPress={onCameraOpen}>
+          <Camera width={20} height={20} />
+        </Pressable>
         <TextInput
           style={styles.messaginginput}
           onChangeText={value => setMessage(value)}
@@ -86,7 +124,7 @@ const Messaging = ({route, navigation}: any) => {
           style={styles.messagingbuttonContainer}
           onPress={handleNewMessage}>
           <View>
-            <Text style={{color: '#f2f0f1', fontSize: 20}}>SEND</Text>
+            <Text style={{color: '#f2f0f1', fontSize: 20}}>보내기</Text>
           </View>
         </Pressable>
       </View>

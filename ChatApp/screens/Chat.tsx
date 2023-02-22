@@ -9,10 +9,10 @@ import socket from '../utils/soket';
 const Chat = () => {
   const [visible, setVisible] = useState(false);
   const [rooms, setRooms] = useState([]);
-  console.log(rooms);
+  const [count, setCount] = useState('');
+  console.log(`rooms : ${JSON.stringify(rooms)}/ counts :${count}`);
 
   useLayoutEffect(() => {
-    console.log('useLayoutEffect');
     function fetchGroups() {
       fetch('http://localhost:4000/api')
         .then(res => res.json())
@@ -23,11 +23,11 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
-    console.log('useEffect');
-    socket.on('roomsList', rooms => {
-      setRooms(rooms);
+    socket.on('roomsList', (roomsArr, counts) => {
+      setRooms(roomsArr);
+      setCount(counts);
     });
-  }, [rooms]);
+  }, [rooms, count]);
 
   const handleCreateGroup = () => setVisible(true);
   return (
@@ -43,11 +43,12 @@ const Chat = () => {
         </View>
       </View>
 
+      {/* 서버에서 방 리스트를 가져옵니다. */}
       <View style={styles.chatlistContainer}>
         {rooms.length > 0 ? (
           <FlatList
             data={rooms}
-            renderItem={({item}) => <ChatComponent item={item} />}
+            renderItem={({item}) => <ChatComponent item={item} count={count} />}
             keyExtractor={item => item.id}
           />
         ) : (
