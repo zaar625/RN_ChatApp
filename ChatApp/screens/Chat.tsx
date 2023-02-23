@@ -1,16 +1,35 @@
-import React, {useState, useLayoutEffect, useEffect} from 'react';
-import {View, Text, Pressable, SafeAreaView, FlatList} from 'react-native';
-import WirteIcon from '../assets/icons/write.svg';
+import React, {useState, useLayoutEffect, useEffect, useRef} from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  SafeAreaView,
+  FlatList,
+  StyleSheet,
+} from 'react-native';
+import PlusIcon from '../assets/icons/plus.svg';
 import ChatComponent from '../components/ChatComponents';
-import {styles} from '../utils/styles';
+import CloseIcon from '../assets/icons/close.svg';
 import Modal from '../components/Modal';
 import socket from '../utils/soket';
+import {Modalize} from 'react-native-modalize';
+
+interface RoomsType {
+  id: string;
+  roomName: string;
+  messages: string[];
+}
 
 const Chat = () => {
-  const [visible, setVisible] = useState(false);
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState<RoomsType[]>([]);
+  console.log(rooms);
   const [count, setCount] = useState('');
+  const makeRoomRef = useRef<Modalize>(null);
   console.log(`rooms : ${JSON.stringify(rooms)}/ counts :${count}`);
+
+  const onOpen = () => {
+    makeRoomRef.current?.open();
+  };
 
   useLayoutEffect(() => {
     function fetchGroups() {
@@ -29,22 +48,21 @@ const Chat = () => {
     });
   }, [rooms, count]);
 
-  const handleCreateGroup = () => setVisible(true);
+  function onBackPress() {
+    makeRoomRef.current?.close();
+  }
+
   return (
-    <SafeAreaView style={styles.chatscreen}>
-      <View style={styles.chattopContainer}>
-        <View style={styles.chatheader}>
-          <Text style={styles.chatheading}>Chats</Text>
-
-          {/* 👇🏻 Logs "ButtonPressed" to the console when the icon is clicked */}
-          <Pressable onPress={handleCreateGroup}>
-            <WirteIcon width={20} height={20} />
-          </Pressable>
-        </View>
+    <SafeAreaView style={styles.container}>
+      {/* header */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>채팅</Text>
+        <Pressable onPress={onOpen}>
+          <PlusIcon width={20} height={20} />
+        </Pressable>
       </View>
-
       {/* 서버에서 방 리스트를 가져옵니다. */}
-      <View style={styles.chatlistContainer}>
+      <View>
         {rooms.length > 0 ? (
           <FlatList
             data={rooms}
@@ -52,15 +70,60 @@ const Chat = () => {
             keyExtractor={item => item.id}
           />
         ) : (
-          <View style={styles.chatemptyContainer}>
-            <Text style={styles.chatemptyText}>No rooms created!</Text>
-            <Text>Click the icon above to create a Chat room</Text>
+          <View style={styles.noListContainer}>
+            <Text style={styles.subTitle}>방 만들기</Text>
+            <CloseIcon width={15} height={15} style={styles.icon} />
+            <Text style={styles.text}>채팅방이 없습니다.</Text>
+            <Text style={styles.text}>
+              아이콘을 클릭하여 채팅방을 만들어 보세요.
+            </Text>
           </View>
         )}
       </View>
-      {visible ? <Modal setVisible={setVisible} /> : ''}
+      <Modalize ref={makeRoomRef} modalHeight={300}>
+        <Modal onBackPress={onBackPress} />
+      </Modalize>
     </SafeAreaView>
   );
 };
 
 export default Chat;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1B202D',
+  },
+  title: {
+    fontSize: 26,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+  },
+  roomListContatiner: {},
+  noListContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  subTitle: {
+    fontWeight: 'bold',
+    fontSize: 26,
+    marginBottom: 22,
+    color: '#fff',
+  },
+  icon: {
+    marginBottom: 15,
+  },
+  text: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 11,
+  },
+});

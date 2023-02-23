@@ -1,16 +1,27 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
+
+const basicDimensions = {
+  height: 926,
+  width: 428,
+};
+
+const HEIGHT = Number(
+  (Dimensions.get('window').height * (1 / basicDimensions.height)).toFixed(3),
+);
+const WIDTH = Number(
+  (Dimensions.get('window').width * (1 / basicDimensions.width)).toFixed(3),
+);
 
 export const styles = StyleSheet.create({
   loginscreen: {
     flex: 1,
-    backgroundColor: '#EEF1FF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-    width: '100%',
+    backgroundColor: '#1B202D',
+    padding: 20,
   },
   loginheading: {
-    fontSize: 26,
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
   logininputContainer: {
@@ -146,12 +157,12 @@ export const styles = StyleSheet.create({
   mmessage: {
     maxWidth: '50%',
     backgroundColor: '#f5ccc2',
-    padding: 15,
+    padding: 10,
     borderRadius: 10,
     marginBottom: 2,
   },
   mvatar: {
-    marginRight: 5,
+    marginRight: 10,
   },
   cchat: {
     width: '100%',
@@ -184,3 +195,5 @@ export const styles = StyleSheet.create({
     opacity: 0.5,
   },
 });
+
+export {HEIGHT, WIDTH};

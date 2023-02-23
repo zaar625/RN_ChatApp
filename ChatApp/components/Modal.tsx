@@ -1,36 +1,42 @@
 import {View, Text, TextInput, Pressable} from 'react-native';
 import React, {useState} from 'react';
-import {styles} from '../utils/styles';
 import socket from '../utils/soket';
+import {StyleSheet} from 'react-native';
+import {HEIGHT} from '../utils/styles';
+import BackIcon from '../assets/icons/back.svg';
 
-const Modal = ({setVisible}: any) => {
+type Props = {
+  onBackPress: () => void;
+};
+
+const Modal = ({onBackPress}: Props) => {
   const [groupName, setGroupName] = useState('');
-
-  //👇🏻 Function that closes the Modal component
-  const closeModal = () => setVisible(false);
 
   //👇🏻 Logs the group name to the console
   const handleCreateRoom = () => {
     socket.emit('createRoom', groupName);
-    closeModal();
+    onBackPress();
   };
   return (
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalsubheading}>방 만들기</Text>
+    <View style={styles.container}>
+      <Pressable onPress={onBackPress}>
+        <BackIcon width={22} style={styles.icon} />
+      </Pressable>
+      <Text style={styles.label}>방 만들기</Text>
       <TextInput
-        style={styles.modalinput}
-        placeholder="Group name"
+        style={styles.inputbox}
+        placeholder="방 이름을 입력해주세요."
+        placeholderTextColor={'rgba(255,255,255,0.4)'}
         onChangeText={value => setGroupName(value)}
       />
-
-      <View style={styles.modalbuttonContainer}>
-        <Pressable style={styles.modalbutton} onPress={handleCreateRoom}>
-          <Text style={styles.modaltext}>생성</Text>
-        </Pressable>
+      <View style={styles.btnContainer}>
         <Pressable
-          style={[styles.modalbutton, {backgroundColor: '#E14D2A'}]}
-          onPress={closeModal}>
-          <Text style={styles.modaltext}>취소</Text>
+          onPress={handleCreateRoom}
+          style={[styles.btn, {marginRight: 30}]}>
+          <Text style={styles.text}>생성</Text>
+        </Pressable>
+        <Pressable style={styles.btn} onPress={onBackPress}>
+          <Text style={styles.text}>취소</Text>
         </Pressable>
       </View>
     </View>
@@ -38,3 +44,47 @@ const Modal = ({setVisible}: any) => {
 };
 
 export default Modal;
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    backgroundColor: '#1B202D',
+    height: 300,
+  },
+  label: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+    marginBottom: 19,
+  },
+  inputbox: {
+    paddingHorizontal: 20,
+    backgroundColor: '#373E4E',
+    borderRadius: 20,
+    height: HEIGHT * 48,
+    color: '#fff',
+    width: '100%',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 29,
+  },
+  btnContainer: {
+    flexDirection: 'row',
+    // backgroundColor: 'pink',
+    alignSelf: 'center',
+  },
+  btn: {
+    paddingHorizontal: 42,
+    paddingVertical: 10,
+    backgroundColor: '#7A8194',
+    borderRadius: 10,
+  },
+  text: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  icon: {
+    marginBottom: 30,
+  },
+});

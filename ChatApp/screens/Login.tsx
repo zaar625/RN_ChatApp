@@ -6,12 +6,11 @@ import {
   TextInput,
   Pressable,
   Alert,
-  Image,
+  StatusBar,
+  StyleSheet,
 } from 'react-native';
+import {HEIGHT, WIDTH} from '../utils/styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-//👇🏻 Import the app styles
-import {styles} from '../utils/styles';
 
 const Login = ({navigation}: any) => {
   const [username, setUsername] = useState('');
@@ -31,7 +30,7 @@ const Login = ({navigation}: any) => {
       //👇🏻 Logs the username to the console
       storeUsername();
     } else {
-      Alert.alert('Username is required.');
+      Alert.alert('닉네임을 입력해주세요.');
     }
   };
 
@@ -50,32 +49,77 @@ const Login = ({navigation}: any) => {
   });
 
   return (
-    <SafeAreaView style={styles.loginscreen}>
-      <View style={styles.loginscreen}>
-        <Text style={styles.loginheading}>Sign in</Text>
-        <View style={styles.logininputContainer}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={'light-content'} />
+      <Text style={styles.title}>로그인</Text>
+      <View style={styles.contentContainer}>
+        <Text style={styles.label}>닉네임</Text>
+        <View style={{alignItems: 'center', justifyContent: 'center'}}>
           <TextInput
+            style={styles.inputbox}
             autoCorrect={false}
-            placeholder="Enter your username"
-            style={styles.logininput}
+            placeholder="사용할 닉네임을 입력해주세요."
+            placeholderTextColor={'rgba(255,255,255,0.4)'}
             onChangeText={value => setUsername(value)}
           />
+          <Pressable onPress={handleSignIn} style={styles.button}>
+            <View>
+              <Text style={styles.btnText}>시작하기</Text>
+            </View>
+          </Pressable>
         </View>
-
-        <Pressable onPress={handleSignIn} style={styles.loginbutton}>
-          <View>
-            <Text style={styles.loginbuttonText}>Get Started</Text>
-          </View>
-        </Pressable>
       </View>
-      <Image
-        source={{
-          uri: 'file:///Users/isang-yun/Library/Developer/CoreSimulator/Devices/0556A566-C2B1-4285-83EC-76AAC43D8597/data/Containers/Data/Application/73C3A651-1F1D-46DE-A963-895E14A9D8D8/tmp/D567E429-43F8-423F-8F07-43A0F6B1698F.jpg',
-        }}
-        style={{width: 50, height: 50, backgroundColor: 'red'}}
-      />
     </SafeAreaView>
   );
 };
 
 export default Login;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1B202D',
+  },
+  contentContainer: {
+    paddingHorizontal: 20,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 26,
+    color: '#fff',
+    fontWeight: 'bold',
+    padding: 20,
+    alignSelf: 'center',
+  },
+  label: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+    marginBottom: 19,
+  },
+  inputbox: {
+    paddingHorizontal: 20,
+    backgroundColor: '#373E4E',
+    borderRadius: 20,
+    height: HEIGHT * 48,
+    color: '#fff',
+    width: '100%',
+    marginBottom: 66,
+    fontSize: 16,
+  },
+  button: {
+    width: WIDTH * 184,
+    height: HEIGHT * 48,
+    backgroundColor: '#7A8194',
+    borderRadius: 10,
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+});
