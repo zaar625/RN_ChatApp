@@ -46,7 +46,7 @@ wsServer.on("connection", (socket) => {
   });
 
   socket.on("newMessage", (data) => {
-    const { room_id, message, user, timestamp, file } = data;
+    const { room_id, message, user, timestamp, image, movie } = data;
     let result = chatRooms.filter((room) => room.id == room_id);
     console.log(
       `방에서 메세지를 보낼때 해당방의 정보입니다.${JSON.stringify(result)}`
@@ -54,8 +54,9 @@ wsServer.on("connection", (socket) => {
     const newMessage = {
       id: generateID(),
       text: message,
+      image,
+      movie,
       user,
-      file,
       time: `${timestamp.hour}:${timestamp.mins}`,
     };
     console.log("New Message: ", newMessage);
